@@ -1,0 +1,820 @@
+{
+  "name": "automation of dns control",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C07RHEJLJ2C",
+          "mode": "list",
+          "cachedResultName": "n8n-automation-0-down-time"
+        },
+        "text": "CF Went down, switch to local server(Cloud flare狀態異常，站點切換為地端域名伺服器)",
+        "otherOptions": {}
+      },
+      "id": "d8d9e7c4-6c04-4cef-b811-3f5d2cf12215",
+      "name": "CF all nodes Goes down alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1900,
+        180
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "l1vyQTG8g5JEhwcO",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C07RHEJLJ2C",
+          "mode": "list",
+          "cachedResultName": "n8n-automation-0-down-time"
+        },
+        "text": "Alter NS failed,please check your hardware devices(更改域名伺服器紀錄失敗，請檢查硬體設備狀態)",
+        "otherOptions": {}
+      },
+      "id": "a0cad4a9-c7bb-4bfc-af62-a61b8358b466",
+      "name": "Alter NS failed",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1660,
+        640
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "l1vyQTG8g5JEhwcO",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C07RHEJLJ2C",
+          "mode": "list",
+          "cachedResultName": "n8n-automation-0-down-time"
+        },
+        "text": "fin.",
+        "otherOptions": {}
+      },
+      "id": "ec65c594-28e5-4f53-82cb-453b890af8c4",
+      "name": "Alter NS successful",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1660,
+        420
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "l1vyQTG8g5JEhwcO",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.cloudflarestatus.com/api/v2/status.json",
+        "options": {}
+      },
+      "id": "d3322925-b1aa-42cc-b491-92b93da0a819",
+      "name": "Get cloud flare global status1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        -180
+      ],
+      "onError": "continueErrorOutput",
+      "notes": "if this step succeeded, then nothing happens."
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 0.0005
+            }
+          ]
+        }
+      },
+      "id": "f42f8cd6-46bc-4a4d-afe6-254b7d0f78a4",
+      "name": "Schedule Trigger error status",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "9022c5be-08b8-4a02-b8e6-bf9dbd55f7e7",
+      "name": "Schedule Trigger for normal status",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C07RHEJLJ2C",
+          "mode": "list",
+          "cachedResultName": "n8n-automation-0-down-time"
+        },
+        "text": "Status safe(cloud flare 狀態一切正常)",
+        "otherOptions": {}
+      },
+      "id": "5db5adc5-a1f1-47fa-8e90-de8177a96392",
+      "name": "safe alert for compliance",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1660,
+        0
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "l1vyQTG8g5JEhwcO",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status.indicator }}",
+                    "rightValue": "={{null}}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ccddb1c0-75cc-4287-bbcf-db8a66ffcda9",
+                    "leftValue": "={{ $json.status.indicator }}",
+                    "rightValue": "={{null}}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3df4b4f6-6599-4ce9-889b-587e0797d7c1",
+                    "leftValue": "={{ $json.status.indicator }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f00edc5a-2bef-417e-a806-23657aa2caa9",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        800,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C07RHEJLJ2C",
+          "mode": "list",
+          "cachedResultName": "n8n-automation-0-down-time"
+        },
+        "text": "=Status safe(cloud flare 狀態一切正常):issue- {{ $json.status.description }}",
+        "otherOptions": {}
+      },
+      "id": "163a4733-4cac-4787-b4c2-ea2adf898623",
+      "name": "safe alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1140,
+        -200
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "l1vyQTG8g5JEhwcO",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Description\n**Using F5 DNS Pool CName to demo** \n\nreference: \n\n[F5 official DNS update api spec document](https://clouddocs.f5.com/products/big-iq/mgmt-api/v0.0/ApiReferences/bigiq_public_api_ref/r_dns_pool_cname_state.html)",
+        "width": 358.32000483603787
+      },
+      "id": "61303a43-1cae-4588-8aa2-8494b8038e17",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "/mgmt/cm/dns/working-config/cname/<id>",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "alternateMode",
+              "value": "demo"
+            },
+            {
+              "name": "dynamicRatio",
+              "value": "demo"
+            },
+            {
+              "name": "enabled",
+              "value": "demo"
+            },
+            {
+              "name": "fallbackIp",
+              "value": "demo"
+            },
+            {
+              "name": "fallbackMode",
+              "value": "demo"
+            },
+            {
+              "name": "loadBalancingMode",
+              "value": "demo"
+            },
+            {
+              "name": "manualResume",
+              "value": "false"
+            },
+            {
+              "name": "qosHops",
+              "value": "false"
+            },
+            {
+              "name": "qosHitRatio",
+              "value": "false"
+            },
+            {
+              "name": "qosKilobytesSecond",
+              "value": "1"
+            },
+            {
+              "name": "qosLcs",
+              "value": "1"
+            },
+            {
+              "name": "qosPacketRate",
+              "value": "1"
+            },
+            {
+              "name": "qosRtt",
+              "value": "1"
+            },
+            {
+              "name": "qosTopology",
+              "value": "1"
+            },
+            {
+              "name": "qosVsCapacity",
+              "value": "1"
+            },
+            {
+              "name": "qosVsScore",
+              "value": "1"
+            },
+            {
+              "name": "ttl",
+              "value": "60"
+            },
+            {
+              "name": "type",
+              "value": "demo"
+            },
+            {
+              "name": "verifyMemberAvailability",
+              "value": "demo"
+            },
+            {
+              "name": "membersReference",
+              "value": "demo"
+            },
+            {
+              "name": "link",
+              "value": "demo"
+            },
+            {
+              "name": "partition",
+              "value": "demo"
+            },
+            {
+              "name": "name",
+              "value": "demo"
+            },
+            {
+              "name": "description",
+              "value": "demo"
+            },
+            {
+              "name": "deviceGroupReference",
+              "value": "demo"
+            },
+            {
+              "name": "link",
+              "value": "demo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8cb26a5b-4eae-46af-837c-b604d9e4437d",
+      "name": "alter Name Server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1140,
+        440
+      ],
+      "notesInFlow": true,
+      "onError": "continueErrorOutput",
+      "notes": "Using F5\n{{https://clouddocs.f5.com/products/big-iq/mgmt-api/v0.0/ApiReferences/bigiq_public_api_ref/r_dns_pool_cname_state.html}}\n\napi doc  for demo parameter setting."
+    },
+    {
+      "parameters": {
+        "content": "## Description\n**[\n0:no response >CF ALL Dead,\n1:normal response,\n2:null response->CF ALL Dead\n]** ",
+        "width": 233.55531043449264,
+        "color": 3
+      },
+      "id": "1c93c7f7-6030-46a2-b729-76a30bf223dc",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        740,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "id": "bbc6ae74-5281-4141-8b34-4ac66ec565ed",
+      "name": "Wait for 5 seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1300,
+        660
+      ],
+      "webhookId": "a34d577a-ea3d-4866-a1b3-31bd92234e61"
+    },
+    {
+      "parameters": {
+        "url": "https://www.cloudflarestatus.com/api/v2/status.json",
+        "options": {}
+      },
+      "id": "34be74bc-0527-4987-8013-ab286a846863",
+      "name": "Get cloud flare global status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        200
+      ],
+      "onError": "continueErrorOutput",
+      "notes": "if this step succeeded, then nothing happens."
+    },
+    {
+      "parameters": {
+        "content": "## Check \n**fetch https://www.cloudflarestatus.com/api/v2/status.%20json** ",
+        "width": 401.89472768965294,
+        "color": 3
+      },
+      "id": "4f0491f7-db5d-4ad5-b3a1-77098469edb0",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        300,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "d948e375-7631-4c5d-9d93-3cc9af44e5a4",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudflare.com/client/v4/zones/a0417e609ae92827dbbc5453d644822f/dns_records/import",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            },
+            {
+              "name": "X-Auth-Email",
+              "value": "cloudflare.admin@twister5.com.tw"
+            },
+            {
+              "name": "X-Auth-Key",
+              "value": "daf08ebac1a4805ecb820fa699ca0d8b0b9e2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "proxied",
+              "value": "triue"
+            },
+            {
+              "name": "file",
+              "value": "www.test-frontpage.pages.dev. IN CNAME www.test-frontpage.pages.dev1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3071213c-24a0-4149-ac40-010997ccffea",
+      "name": "alter Name Server Demo(Cloud flare)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        1300
+      ],
+      "notesInFlow": true,
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Using cf\n\n\napi doc  for demo parameter setting."
+    },
+    {
+      "parameters": {
+        "url": "https://api.cloudflare.com/client/v4/zones/a0417e609ae92827dbbc5453d644822f/dns_records",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            },
+            {
+              "name": "X-Auth-Email",
+              "value": "cloudflare.admin@twister5.com.tw"
+            },
+            {
+              "name": "X-Auth-Key",
+              "value": "daf08ebac1a4805ecb820fa699ca0d8b0b9e2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "proxied",
+              "value": "triue"
+            },
+            {
+              "name": "file",
+              "value": "www.test-frontpage.pages.dev. IN CNAME www.test-frontpage.pages.dev1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7e34174f-3af0-4102-ba1f-028d7932aa26",
+      "name": "get Name Server Demo(Cloud flare)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        1100
+      ],
+      "notesInFlow": true,
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Using cf\n\n\napi doc  for demo parameter setting."
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.cloudflare.com/client/v4/zones/a0417e609ae92827dbbc5453d644822f/dns_records/a44788539d26ae58cbc6ff8722ea9377",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Auth-Email",
+              "value": "cloudflare.admin@twister5.com.tw"
+            },
+            {
+              "name": "X-Auth-Key",
+              "value": "daf08ebac1a4805ecb820fa699ca0d8b0b9e2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "json",
+        "body": "{   \"type\": \"CNAME\",   \"name\": \"www.para-universe-energy-exchange-station.com\",   \"content\": \"test-frontpage.pages.dev1\",   \"proxied\": true,   \"ttl\": 1 }",
+        "options": {}
+      },
+      "id": "f2045597-07d4-40df-94d4-3ae0a61c9d0d",
+      "name": "getput Name Server Demo(Cloud flare)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        1520
+      ],
+      "notesInFlow": true,
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Using cf\n\n\napi doc  for demo parameter setting."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get cloud flare global status1": {
+      "main": [
+        [
+          {
+            "node": "safe alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "alter Name Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger error status": {
+      "main": [
+        [
+          {
+            "node": "Get cloud flare global status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger for normal status": {
+      "main": [
+        [
+          {
+            "node": "Get cloud flare global status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "alter Name Server",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CF all nodes Goes down alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "safe alert for compliance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "alter Name Server",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CF all nodes Goes down alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "alter Name Server": {
+      "main": [
+        [
+          {
+            "node": "Alter NS successful",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alter NS failed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait for 5 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for 5 seconds": {
+      "main": [
+        [
+          {
+            "node": "alter Name Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get cloud flare global status": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "alter Name Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "alter Name Server Demo(Cloud flare)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "get Name Server Demo(Cloud flare)1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "getput Name Server Demo(Cloud flare)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d1858f63-2211-4f50-8963-da8b4ef9fd48",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "704a38e2522e5174d012202153bb8dd5f4fc514e6718280ffe5b33e41a89c769"
+  },
+  "id": "3akvdhFxoZSb3Y1L",
+  "tags": []
+}
