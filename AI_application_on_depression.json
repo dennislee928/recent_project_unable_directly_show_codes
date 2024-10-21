@@ -1,0 +1,545 @@
+{
+  "name": "AI application on depression",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f4cf7a86-57a4-4bd1-aa10-3fa24c2276f5",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        560,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "de5eb783-c40f-48b4-9456-afe43250fcd0",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        300
+      ],
+      "webhookId": "0ec901b8-9d3f-4001-9546-90d11b420a3d"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d742c21a-f6ba-4341-a03d-e7d8b64b81ae",
+      "name": "tts function",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1120,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9de089fd-e3b0-46e2-b0f4-ea51bb7e936d",
+      "name": "Ollama Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        420
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "4a8f0c6f-e190-4023-9b72-adede49e027d",
+      "name": "Redis Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.3,
+      "position": [
+        1240,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "id": "3e7bb6ef-3e50-4421-bbbb-916d122fbda7",
+      "name": "Vectorize data for next step requirements",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "3df6589e-70d3-4723-9ebe-68bdea2978e5",
+      "name": "Tt-Image",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1720,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "4835f5a0-747d-4c09-907d-eb15a6a1395c",
+      "name": "Mistral Cloud Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        1720,
+        420
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c8a6d292-422f-432b-82d5-12e9c020b8ef",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.1,
+      "position": [
+        1840,
+        420
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "TOIJMlyqpiYKavj0",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "66802311-e1d0-4302-a283-d525478bd5fb",
+              "leftValue": "={{ image_satisfaction }}",
+              "rightValue": 80,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "af7ad11e-683b-4211-b259-4a7c8ab80bd2",
+      "name": "gate for if the generated image is satisfying patient's first clinic self-description(based on scores)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2100,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "44c1c230-4cc6-4f9c-ab7a-0f46d02d2bc4",
+      "name": "Use specific forms to give the scores toward the patients",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        2540,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f147b063-2cf2-4443-a4f1-10fd2da0237d",
+      "name": "Azure OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        260
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "74c675c0-8b74-4cf1-9a2b-8a06cf8dc6c5",
+      "name": "Zep",
+      "type": "@n8n/n8n-nodes-langchain.memoryZep",
+      "typeVersion": 1.2,
+      "position": [
+        2660,
+        400
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "5198908b-2114-4299-808e-9349a3d7b8d2",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        2720,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "21c4ed64-cb73-40a0-a885-ed1d4d03123c",
+      "name": "Proof net bot",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        2920,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "2b89ea08-06f1-4f0c-8814-2133f1a079de",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2920,
+        260
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "195561b2-d992-4043-a6df-f4d356ccd8cf",
+      "name": "Xata",
+      "type": "@n8n/n8n-nodes-langchain.memoryXata",
+      "typeVersion": 1.3,
+      "position": [
+        3040,
+        280
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "db593394-7e3d-4b55-9411-e9affbc21225",
+      "name": "Call n8n Workflow Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3100,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## purpose\n**\n1.使用語音辨識模型讓精神科初診病患可以不用手寫資料，以及讓主治醫師可以省去部分寫主訴的時間\n2.使用文字生成圖片模型加上迴圈，讓病患能夠用圖片表達當下對特定問題的反應，若不滿意圖片，可重複進行至滿意分數超過...為止\n\n3.根據1.,2.的文字資料，使用資料分類模型（監督式非生成式模型）＋指定資料集（憂鬱正量表、思覺失調量表、魏氏智力測驗量表...etc），進行綜合評估。（proof net bot）\n\n4.進行客製化總結或資料儲存",
+        "height": 395.8088817137431
+      },
+      "id": "46afbdc8-aa5f-459e-823f-ba73dd6e3d75",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        540,
+        -255.80888171374312
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "7044f2e4-7373-4605-9df2-63aff35333a9",
+      "name": "customize behaviors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3520,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "id": "a7234613-2a23-4c25-81e7-f4d143718d73",
+      "name": "Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3540,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "TOIJMlyqpiYKavj0",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "tts function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "tts function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "tts function",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "tts function",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tts function": {
+      "main": [
+        [
+          {
+            "node": "Vectorize data for next step requirements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vectorize data for next step requirements": {
+      "main": [
+        [
+          {
+            "node": "Tt-Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Tt-Image",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Tt-Image",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tt-Image": {
+      "main": [
+        [
+          {
+            "node": "gate for if the generated image is satisfying patient's first clinic self-description(based on scores)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gate for if the generated image is satisfying patient's first clinic self-description(based on scores)": {
+      "main": [
+        [
+          {
+            "node": "Use specific forms to give the scores toward the patients",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tt-Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Use specific forms to give the scores toward the patients",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zep": {
+      "ai_memory": [
+        [
+          {
+            "node": "Use specific forms to give the scores toward the patients",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Use specific forms to give the scores toward the patients",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use specific forms to give the scores toward the patients": {
+      "main": [
+        [
+          {
+            "node": "Proof net bot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Proof net bot",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Xata": {
+      "ai_memory": [
+        [
+          {
+            "node": "Proof net bot",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call n8n Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Proof net bot",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proof net bot": {
+      "main": [
+        [
+          {
+            "node": "customize behaviors",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1925711e-7fb6-4013-8b4d-255a74ee7107",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "704a38e2522e5174d012202153bb8dd5f4fc514e6718280ffe5b33e41a89c769"
+  },
+  "id": "pwgWBpsgROxrZ5mJ",
+  "tags": [
+    {
+      "name": "his",
+      "id": "tJwLuEEoyUpDDIRn",
+      "createdAt": "2024-10-10T09:15:26.713Z",
+      "updatedAt": "2024-10-10T09:15:26.713Z"
+    },
+    {
+      "name": "nccu",
+      "id": "zjPZVe83vQoUCgiy",
+      "createdAt": "2024-10-10T09:15:20.721Z",
+      "updatedAt": "2024-10-10T09:15:20.721Z"
+    }
+  ]
+}
